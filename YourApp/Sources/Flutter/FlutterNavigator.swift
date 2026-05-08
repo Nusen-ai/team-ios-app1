@@ -102,7 +102,7 @@ class FlutterNavigator {
             object: nil,
             queue: .main
         ) { notification in
-            completion(notification.userInfo)
+            completion(notification.userInfo as? [String: Any])
         }
     }
 }

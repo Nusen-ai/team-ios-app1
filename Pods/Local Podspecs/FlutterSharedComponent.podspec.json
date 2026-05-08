@@ -1,0 +1,37 @@
+{
+  "name": "FlutterSharedComponent",
+  "version": "1.0.0",
+  "summary": "企业级Flutter共享组件库",
+  "description": "支持多iOS原生项目复用的Flutter组件库，包含登录、商城、问卷等页面",
+  "homepage": "https://github.com/your-org/flutter-shared-components",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Enterprise Team": "team@enterprise.com"
+  },
+  "source": {
+    "path": "."
+  },
+  "platforms": {
+    "ios": "13.0"
+  },
+  "swift_versions": "5.0",
+  "vendored_frameworks": "FlutterSharedComponent.xcframework/Debug/App.xcframework",
+  "dependencies": {
+    "Flutter": []
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES",
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "i386"
+  },
+  "testspecs": [
+    {
+      "name": "Tests",
+      "test_type": "unit",
+      "source_files": "Tests/**/*"
+    }
+  ],
+  "swift_version": "5.0"
+}

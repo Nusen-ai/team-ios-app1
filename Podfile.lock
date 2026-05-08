@@ -1,0 +1,23 @@
+PODS:
+  - Flutter (3.13.0)
+  - FlutterSharedComponent (1.0.0):
+    - Flutter
+
+DEPENDENCIES:
+  - FlutterSharedComponent (from `../ios_private_pods`)
+
+SPEC REPOS:
+  trunk:
+    - Flutter
+
+EXTERNAL SOURCES:
+  FlutterSharedComponent:
+    :path: "../ios_private_pods"
+
+SPEC CHECKSUMS:
+  Flutter: 8ff16720b007bae16abfe75ef9fe3ee45ead486a
+  FlutterSharedComponent: 16dfe4bdc0bde5f99e9074efef5ed2d5a76cfc6e
+
+PODFILE CHECKSUM: a4d5e5a4f6a9b894400c322a70372a2f2e5afca6
+
+COCOAPODS: 1.16.2
