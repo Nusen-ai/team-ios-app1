@@ -1,0 +1,43 @@
+name: YourApp
+options:
+  bundleIdPrefix: com.enterprise
+  deploymentTarget:
+    iOS: "13.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    ENABLE_BITCODE: "NO"
+
+targets:
+  YourApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: YourApp/Sources
+        type: group
+      - path: YourApp/Resources
+        type: group
+      - path: YourApp/SupportingFiles
+        type: group
+    settings:
+      base:
+        INFOPLIST_FILE: YourApp/SupportingFiles/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.enterprise.iosapp1
+        PRODUCT_NAME: YourApp
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_OBJC_BRIDGING_HEADER: ""
+    entitlements:
+      path: YourApp/SupportingFiles/YourApp.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.enterprise.iosapp1
