@@ -18,7 +18,7 @@
     "ios": "13.0"
   },
   "swift_versions": "5.0",
-  "vendored_frameworks": "FlutterSharedComponent.xcframework/Debug/App.xcframework",
+  "vendored_frameworks": "FlutterSharedComponent.xcframework",
   "dependencies": {
     "Flutter": []
   },

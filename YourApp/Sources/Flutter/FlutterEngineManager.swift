@@ -30,32 +30,52 @@ class FlutterEngineManager {
                 bundle: nil
             )
             setupMethodChannel(on: flutterViewController)
+            setupEventChannel(on: flutterViewController)
+            setupCloseChannel(on: flutterViewController)
             return flutterViewController
         }
 
-        let flutterEngine = FlutterEngine(name: "FlutterSharedComponents")
+        // 使用 FlutterEngineGroup 创建引擎
+        let flutterEngine = FlutterEngineGroup(name: "FlutterSharedComponents", project: nil)
 
-        if #available(iOS 13.0, *) {
-            let engineGroup = FlutterEngineGroup(name: "FlutterSharedComponents", project: nil)
-            engine = engineGroup.makeEngine(withEntrypoint: "main", libraryURI: nil)
-        } else {
-            engine = flutterEngine
-        }
+        // 创建引擎实例
+        engine = FlutterEngine(
+            project: nil,
+            dartEntrypointArguments: ["arg1", "arg2"]
+        )
 
         guard let engine = engine else {
             fatalError("Flutter引擎初始化失败")
         }
 
-        engine.run()
+        // 初始化引擎并等待完成
+        let semaphore = DispatchSemaphore(value: 0)
 
+        engine.run { [weak self] success in
+            if success {
+                NSLog("Flutter引擎运行成功")
+            } else {
+                NSLog("Flutter引擎运行失败")
+            }
+            semaphore.signal()
+        }
+
+        // 等待引擎启动完成（最多5秒）
+        _ = semaphore.wait(timeout: .now() + 5)
+
+        // 创建 FlutterViewController
         let flutterViewController = FlutterViewController(
             engine: engine,
             nibName: nil,
             bundle: nil
         )
 
+        // 设置初始路由
+        engine.defaultRouteName = Routes.login
+
         setupMethodChannel(on: flutterViewController)
         setupEventChannel(on: flutterViewController)
+        setupCloseChannel(on: flutterViewController)
 
         NSLog("Flutter引擎初始化完成")
 
@@ -73,15 +93,6 @@ class FlutterEngineManager {
         methodChannel?.setMethodCallHandler { [weak self] call, result in
             self?.handleMethodCall(call: call, result: result)
         }
-
-        closeChannel = FlutterMethodChannel(
-            name: "com.shared.components/close_flutter",
-            binaryMessenger: engine.binaryMessenger
-        )
-
-        closeChannel?.setMethodCallHandler { [weak self] call, result in
-            self?.handleCloseMethodCall(call: call, result: result)
-        }
     }
 
     private func setupEventChannel(on viewController: FlutterViewController) {
@@ -93,6 +104,19 @@ class FlutterEngineManager {
         )
 
         eventChannel?.setStreamHandler(FlutterEventStreamHandler())
+    }
+
+    private func setupCloseChannel(on viewController: FlutterViewController) {
+        guard let engine = viewController.engine else { return }
+
+        closeChannel = FlutterMethodChannel(
+            name: "com.shared.components/close_flutter",
+            binaryMessenger: engine.binaryMessenger
+        )
+
+        closeChannel?.setMethodCallHandler { [weak self] call, result in
+            self?.handleCloseMethodCall(call: call, result: result)
+        }
     }
 
     private func handleMethodCall(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -195,11 +219,20 @@ class FlutterEngineManager {
         let flutterViewController = initializeEngine()
         currentFlutterViewController = flutterViewController
 
-        if let args = arguments {
-            sendMessageToFlutter(method: "setRouteArguments", arguments: args)
+        // 设置初始路由
+        if let engine = flutterViewController.engine {
+            engine.defaultRouteName = route
         }
 
+        // 设置全屏显示
         flutterViewController.modalPresentationStyle = .fullScreen
+
+        // 设置关闭回调
+        flutterViewController.onDismiss = { [weak self] in
+            self?.currentFlutterViewController = nil
+            NotificationCenter.default.post(name: .flutterPageClosed, object: nil)
+        }
+
         viewController.present(flutterViewController, animated: true)
     }
 
@@ -253,9 +286,12 @@ class FlutterEngineManager {
     }
 
     func resetEngine() {
+        engine?.reset()
         engine = nil
+        currentFlutterViewController = nil
         methodChannel = nil
         eventChannel = nil
+        closeChannel = nil
     }
 }
 
